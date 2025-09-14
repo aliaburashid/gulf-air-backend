@@ -1,6 +1,6 @@
-# Defines flight information 
-
 # pydantic: a library used in FastAPI to validate and handle data easily.
+# Validate input – Ensure incoming data is correct before saving to the database.
+# Format output – Ensure data sent back to clients (API responses) has the right structure.
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
