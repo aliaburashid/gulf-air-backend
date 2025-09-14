@@ -9,6 +9,12 @@ from config.environment import secret
 
 http_bearer = HTTPBearer()
 
+# This is a dependency function that validates JWT tokens
+# It extracts the token from the Authorization header
+# Decodes and validates the token
+# Returns the authenticated user or raises an error
+
+
 # This function takes the database session and the JWT token from the request header
 def get_current_user(db: Session = Depends(get_db), token: str = Depends(http_bearer)):
 
