@@ -108,10 +108,34 @@ def create_booking(booking: BookingCreateSchema, db: Session = Depends(get_db), 
     elif booking.seat_class == "falcon_gold":
         flight.available_falcon_gold_seats -= 1
     
-    # STEP 7: Save everything to database
+    # STEP 7: Award loyalty points for the booking
+    from controllers.loyalty import award_loyalty_points, calculate_booking_points
+    points_earned = calculate_booking_points(new_booking, flight)
+    loyalty_result = award_loyalty_points(
+        user_id=current_user.id,
+        points=points_earned,
+        reason=f"Flight booking: {flight.flight_number}",
+        db=db
+    )
+    
+    # STEP 8: Save everything to database
     db.commit()
     db.refresh(new_booking)
-    return new_booking
+    
+    # Return booking with loyalty points information
+    response = {"booking": new_booking}
+    
+    # Add loyalty points information if user is a member
+    if "membership_required" in loyalty_result and loyalty_result["membership_required"]:
+        response["loyalty_message"] = loyalty_result["message"]
+    else:
+        response["loyalty_points"] = {
+            "points_earned": loyalty_result["points_earned"],
+            "new_tier": loyalty_result["new_tier"],
+            "total_points": loyalty_result["total_points"]
+        }
+    
+    return response
 
 # =============================================================================
 # UPDATE BOOKING - Allows users to modify their booking details

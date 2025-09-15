@@ -29,6 +29,9 @@ class UserModel(BaseModel):
     # Relationships - a user can have multiple bookings
     bookings = relationship('BookingModel', back_populates='user')
     
+    # Relationship to loyalty: Each user has one loyalty account
+    loyalty = relationship('LoyaltyModel', back_populates='user', uselist=False)
+    
     # password hashing: Takes a plain password and hashes it using bcrypt (passlib).
     def set_password(self, password: str):
         self.password_hash = pwd_context.hash(password)

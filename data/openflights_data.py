@@ -231,7 +231,7 @@ def process_gulf_air_data():
     
     return processed_routes
 
-
+# =============================================================================
 # MAIN EXECUTION - Run the data processing when script is executed directly
 if __name__ == "__main__":
     # Process Gulf Air data from OpenFlights

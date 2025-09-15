@@ -1,7 +1,7 @@
 # seed.py
 
 from sqlalchemy.orm import sessionmaker, Session
-from data.flight_data import flights_list
+from data.gulf_air_flights import flights_list
 from data.booking_data import bookings_list
 from data.user_data import user_list
 from config.environment import db_URI
@@ -11,6 +11,7 @@ from models.base import Base # import base model
 from models.user import UserModel
 from models.flight import FlightModel
 from models.booking import BookingModel
+from models.aircraft import AircraftModel
 
 engine = create_engine(db_URI)
 SessionLocal = sessionmaker(bind=engine)
@@ -29,6 +30,15 @@ try:
     # Add users first (they are referenced by bookings)
     print("Adding users...")
     db.add_all(user_list)
+    db.commit()
+
+    # Add aircraft first (they are referenced by flights)
+    print("Adding aircraft...")
+    aircraft_list = []
+    for aircraft_data in AircraftModel.get_gulf_air_fleet():
+        aircraft = AircraftModel(**aircraft_data)
+        aircraft_list.append(aircraft)
+    db.add_all(aircraft_list)
     db.commit()
 
     # Add flights

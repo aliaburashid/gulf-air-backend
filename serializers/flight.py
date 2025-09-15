@@ -1,52 +1,70 @@
-# pydantic: a library used in FastAPI to validate and handle data easily.
-# Validate input – Ensure incoming data is correct before saving to the database.
-# Format output – Ensure data sent back to clients (API responses) has the right structure.
+# =============================================================================
+# FLIGHT SERIALIZERS - Data validation for flight operations
+# These classes define how flight data is validated when sent to/from the API
+# They ensure data is correct before saving to database and format responses properly
+# =============================================================================
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
-# For reading/displaying flight data
+# =============================================================================
+# FLIGHT SCHEMA - For reading/displaying flight data
+# Used when returning flight information to the frontend
+# Includes all flight details that users need to see
+# =============================================================================
+
 class FlightSchema(BaseModel):
-    id: Optional[int] = Field(default=None)
-    flight_number: str
-    departure_airport: str
-    arrival_airport: str
-    departure_time: datetime
-    arrival_time: datetime
-    aircraft_type: str
-    price: float
-    available_seats: int
-    total_seats: int
-    status: str = "scheduled"
+    id: Optional[int] = Field(default=None)  # Flight ID (auto-generated)
+    flight_number: str  # Flight number like "GF001"
+    departure_airport: str  # Airport code like "BAH"
+    arrival_airport: str    # Airport code like "DXB"
+    departure_time: datetime  # When flight leaves
+    arrival_time: datetime    # When flight arrives
+    aircraft_id: int  # Which aircraft is used
+    economy_price: float   # Economy class price
+    falcon_gold_price: float  # Falcon Gold class price
+    available_economy_seats: int   # Available economy seats
+    available_falcon_gold_seats: int  # Available Falcon Gold seats
+    status: str = "scheduled"  # Flight status
 
     class Config:
-        # allows this Pydantic model to work directly with ORM/database objects
-        orm_mode = True
+        orm_mode = True  # Allows working with database objects directly
 
-# used when creating a new flight 
+# =============================================================================
+# FLIGHT CREATE - For creating new flights
+# Used when admin creates a new flight
+# All fields are required to create a complete flight record
+# =============================================================================
+
 class FlightCreate(BaseModel):
-    flight_number: str
-    departure_airport: str
-    arrival_airport: str
-    departure_time: datetime
-    arrival_time: datetime
-    aircraft_type: str
-    price: float
-    available_seats: int
-    total_seats: int
-    # Ensures the data sent by the user is valid before saving to the database.
-    status: str = "scheduled"
+    flight_number: str  # Must be unique
+    departure_airport: str  # Airport code
+    arrival_airport: str    # Airport code
+    departure_time: datetime  # Scheduled departure
+    arrival_time: datetime    # Scheduled arrival
+    aircraft_id: int  # Which aircraft to use
+    economy_price: float   # Economy class price
+    falcon_gold_price: float  # Falcon Gold class price
+    available_economy_seats: int   # Starting economy seats
+    available_falcon_gold_seats: int  # Starting Falcon Gold seats
+    status: str = "scheduled"  # Default status
 
-# Used when updating an existing flight
-# All fields are optional because the user might want to update only some fields, not all of them
+# =============================================================================
+# FLIGHT UPDATE - For updating existing flights
+# Used when admin updates flight information
+# All fields are optional - only update what's provided
+# =============================================================================
+
 class FlightUpdate(BaseModel):
     flight_number: Optional[str] = None
     departure_airport: Optional[str] = None
     arrival_airport: Optional[str] = None
     departure_time: Optional[datetime] = None
     arrival_time: Optional[datetime] = None
-    aircraft_type: Optional[str] = None
-    price: Optional[float] = None
-    available_seats: Optional[int] = None
-    total_seats: Optional[int] = None
+    aircraft_id: Optional[int] = None
+    economy_price: Optional[float] = None
+    falcon_gold_price: Optional[float] = None
+    available_economy_seats: Optional[int] = None
+    available_falcon_gold_seats: Optional[int] = None
     status: Optional[str] = None

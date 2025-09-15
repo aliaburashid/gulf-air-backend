@@ -12,6 +12,7 @@ pydantic = "*"
 pyjwt = "*"
 passlib = "*"
 bcrypt = "*"
+requests = "*"
 
 [dev-packages]
 

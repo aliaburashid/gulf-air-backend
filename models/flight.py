@@ -1,26 +1,46 @@
-# Defines flight information (routes, times, pricing, seats)
+# =============================================================================
+# FLIGHT MODEL - Stores individual flight information
+# This model stores details about each specific flight (route, time, pricing, availability)
+# Each flight is linked to an aircraft and has separate pricing for economy/business classes
+# =============================================================================
 
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
 from .base import BaseModel
 from sqlalchemy.orm import relationship
 
-
-# Flight database model
 class FlightModel(BaseModel):
+    """Flight model - stores information about individual flights"""
 
-    __tablename__ = "flights"  # Table name in the database
+    __tablename__ = "flights"  # Database table name
 
-    id = Column(Integer, primary_key=True, index=True)
-    flight_number = Column(String, unique=True)  # Each flight number must be unique
-    departure_airport = Column(String) # Departure airport code/name
-    arrival_airport = Column(String) # Arrival airport code/name
-    departure_time = Column(DateTime) # Scheduled departure date and time
-    arrival_time = Column(DateTime) # Scheduled arrival date and time
-    aircraft_type = Column(String) # Type/model of the plane
-    price = Column(Float)  # Ticket price
-    available_seats = Column(Integer) # Seats still available
-    total_seats = Column(Integer) # Total number of seats on the plane
-    status = Column(String, default="scheduled")  # scheduled, delayed, cancelled, completed
+    # Basic flight identification
+    id = Column(Integer, primary_key=True, index=True)  # Unique flight ID
+    flight_number = Column(String, unique=True)  # Flight number like "GF001", "GF002"
+    
+    # Route information - where the flight goes
+    departure_airport = Column(String)  # Airport code like "BAH" (Bahrain)
+    arrival_airport = Column(String)    # Airport code like "DXB" (Dubai)
+    
+    # Schedule information - when the flight operates
+    departure_time = Column(DateTime)  # When the flight leaves
+    arrival_time = Column(DateTime)    # When the flight arrives
+    
+    # Aircraft information - which plane is used
+    aircraft_id = Column(Integer, ForeignKey('aircraft.id'))  # Links to aircraft table
+    
+    # Pricing - different prices for different seat classes
+    economy_price = Column(Float)   # Price for economy class seats
+    falcon_gold_price = Column(Float)  # Price for Falcon Gold class seats (usually 2.5x economy)
+    
+    # Seat availability - how many seats are still available
+    available_economy_seats = Column(Integer)   # Available economy seats
+    available_falcon_gold_seats = Column(Integer)  # Available Falcon Gold seats
+    
+    # Flight status - current state of the flight
+    status = Column(String, default="scheduled")  # Options: scheduled, delayed, cancelled, completed
+    
+    # Relationship to aircraft
+    aircraft = relationship('AircraftModel')
 
     # Relationship to bookings (a flight can have many bookings)
     bookings = relationship('BookingModel', back_populates='flight')
