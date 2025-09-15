@@ -23,7 +23,7 @@ def create_test_users():
     
     user3 = UserModel(
         username="sarah_ahmed", 
-        email="sarah.ahmed@mail.ae",
+        email="sarah.ahmed@gmail.com",
         first_name="Sarah",
         last_name="Ahmed",
         phone_number="+97123456789"
@@ -32,7 +32,7 @@ def create_test_users():
     
     user4 = UserModel(
         username="mohammed_ali", 
-        email="mohammed.ali@correo.sa",
+        email="mohammed.ali@gmail.com",
         first_name="Mohammed",
         last_name="Ali",
         phone_number="+96612345678"
@@ -41,7 +41,7 @@ def create_test_users():
     
     user5 = UserModel(
         username="fatima_hassan", 
-        email="fatima.hassan@mail.qa",
+        email="fatima.hassan@gmail.com",
         first_name="Fatima",
         last_name="Hassan",
         phone_number="+97412345678"
