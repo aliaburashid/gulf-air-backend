@@ -25,7 +25,7 @@ def create_bookings():
         passenger_name="Sarah Ahmed",
         passenger_email="sarah.ahmed@mail.ae",
         passport_number="33567890",
-        seat_class="falcon_gold",
+        seat_class="business",
         seat_number="8B",
         booking_status="confirmed",
         total_price=279.99,

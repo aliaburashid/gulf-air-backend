@@ -25,12 +25,15 @@ class UserModel(BaseModel):
     first_name = Column(String)
     last_name = Column(String)
     phone_number = Column(String)
+    
+    # Falconflyer loyalty program fields
+    loyalty_miles = Column(Integer, default=0)  # Total accumulated miles
+    loyalty_points = Column(Integer, default=0)  # Total loyalty points
+    loyalty_tier = Column(String, default='BLUE')  # Loyalty tier: BLUE, SILVER, GOLD, PLATINUM
+    membership_number = Column(String, unique=True)  # Unique membership number
 
     # Relationships - a user can have multiple bookings
     bookings = relationship('BookingModel', back_populates='user')
-    
-    # Relationship to loyalty: Each user has one loyalty account
-    loyalty = relationship('LoyaltyModel', back_populates='user', uselist=False)
     
     # password hashing: Takes a plain password and hashes it using bcrypt (passlib).
     def set_password(self, password: str):

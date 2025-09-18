@@ -1,69 +1,107 @@
-# =============================================================================
-# FLIGHTS CONTROLLER - User-facing flight endpoints only
-# This controller provides read-only access to flight information for users
-# Users can view flights, search flights, and check flight status
-# Flight creation/updates are handled by data seeding, not user endpoints
-# =============================================================================
-
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from models.flight import FlightModel
-from serializers.flight import FlightSchema
+from serializers.flight import FlightSchema, FlightCreate as FlightCreateSchema, FlightUpdate as FlightUpdateSchema
 from typing import List
 from database import get_db
 
 router = APIRouter()
 
-# =============================================================================
-# GET ALL FLIGHTS - View all available flights
-# Users can browse all available flights in the system
-# This is useful for general browsing and discovery
-# =============================================================================
 
+# ------------------------
+# Get all flights
+# ------------------------
 @router.get('/flights', response_model=List[FlightSchema])
 def get_flights(db: Session=Depends(get_db)):
-    """Get all available flights for users to browse"""
     flights = db.query(FlightModel).all()
     return flights
 
-# =============================================================================
-# GET SINGLE FLIGHT - View details of a specific flight
-# Users can get detailed information about a specific flight
-# Useful when they want to book a particular flight
-# =============================================================================
 
+# ------------------------
+# Get on flight by ID
+# ------------------------
 @router.get("/flights/{flight_id}", response_model=FlightSchema)
 def get_single_flight(flight_id: int, db: Session = Depends(get_db)):
-    """Get detailed information about a specific flight"""
     flight = db.query(FlightModel).filter(FlightModel.id == flight_id).first()
     if not flight:
         raise HTTPException(status_code=404, detail="Flight not found")
     return flight
 
-# =============================================================================
-# SEARCH FLIGHTS - Find flights by route
-# Users can search for flights between specific airports
-# Only returns scheduled flights (not cancelled or completed)
-# =============================================================================
 
+# ------------------------
+# Create a new flight (with validation)
+# ------------------------
+@router.post("/flights", response_model=FlightSchema)
+def create_flight(flight: FlightCreateSchema, db: Session = Depends(get_db)):
+    # Check if flight number already exists
+    existing_flight = db.query(FlightModel).filter(FlightModel.flight_number == flight.flight_number).first()
+    if existing_flight:
+        raise HTTPException(status_code=400, detail="Flight number already exists")
+    
+    
+    new_flight = FlightModel(**flight.dict())  # Unpack all data into the model
+    
+    # save in the database
+    db.add(new_flight)
+    db.commit()
+    db.refresh(new_flight)  # Refresh to get the new ID
+    return new_flight
+
+
+# ------------------------
+# Update an existing flight
+# ------------------------
+@router.put("/flights/{flight_id}", response_model=FlightSchema)
+def update_flight(flight_id: int, flight: FlightUpdateSchema, db: Session = Depends(get_db)):
+    db_flight = db.query(FlightModel).filter(FlightModel.id == flight_id).first()
+    if not db_flight:
+        raise HTTPException(status_code=404, detail="Flight not found")
+    
+    # only upate the fields provided 
+    flight_data = flight.dict(exclude_unset=True, exclude={'id'}) 
+    for key, value in flight_data.items():
+        setattr(db_flight, key, value)
+
+    db.commit()  # Save changes
+    db.refresh(db_flight)  # Refresh to get updated data
+    return db_flight
+
+
+
+# ------------------------
+# Delete a flight
+# ------------------------
+@router.delete("/flights/{flight_id}")
+def delete_flight(flight_id: int, db: Session = Depends(get_db)):
+    db_flight = db.query(FlightModel).filter(FlightModel.id == flight_id).first()
+    if not db_flight:
+        raise HTTPException(status_code=404, detail="Flight not found")
+
+    db.delete(db_flight)  # Remove from database
+    db.commit()  # Save changes
+    return {"message": f"Flight with ID {flight_id} has been deleted"}
+
+
+
+# ------------------------
+# Search flight by departure and arrival 
+# ------------------------
 @router.get("/flights/search/{departure_airport}/{arrival_airport}")
 def search_flights(departure_airport: str, arrival_airport: str, db: Session = Depends(get_db)):
-    """Search for flights between two airports"""
     flights = db.query(FlightModel).filter(
         FlightModel.departure_airport == departure_airport,
         FlightModel.arrival_airport == arrival_airport,
-        FlightModel.status == "scheduled"  # Only upcoming scheduled flights
+        #  only upcoming scheduled flights 
+        FlightModel.status == "scheduled"
     ).all()
     return flights
 
-# =============================================================================
-# FLIGHT STATUS - Check the status of a specific flight
-# Users can check if their flight is on time, delayed, or cancelled
-# Useful for passengers to track their flight status
-# =============================================================================
+
+# ------------------------
+# Get the status of a flight by flight number
+# ------------------------
 @router.get("/flights/status/{flight_number}")
 def get_flight_status(flight_number: str, db: Session = Depends(get_db)):
-    """Get the current status of a flight by flight number"""
     flight = db.query(FlightModel).filter(FlightModel.flight_number == flight_number).first()
     if not flight:
         raise HTTPException(status_code=404, detail="Flight not found")

@@ -8,7 +8,11 @@ def create_test_users():
         email="admin@gulfair.com",
         first_name="Admin",
         last_name="User",
-        phone_number="+97312345678"
+        phone_number="+97312345678",
+        loyalty_miles=15000,
+        loyalty_points=500,
+        loyalty_tier="SILVER",
+        membership_number="GF001234"
     )
     user1.set_password("admin123")
     
@@ -17,7 +21,11 @@ def create_test_users():
         email="john.doe@email.com",
         first_name="John",
         last_name="Doe",
-        phone_number="+97387654321"
+        phone_number="+97387654321",
+        loyalty_miles=8500,
+        loyalty_points=300,
+        loyalty_tier="BLUE",
+        membership_number="GF002345"
     )
     user2.set_password("password123")
     
@@ -26,7 +34,11 @@ def create_test_users():
         email="sarah.ahmed@gmail.com",
         first_name="Sarah",
         last_name="Ahmed",
-        phone_number="+97123456789"
+        phone_number="+97123456789",
+        loyalty_miles=25000,
+        loyalty_points=1200,
+        loyalty_tier="GOLD",
+        membership_number="GF003456"
     )
     user3.set_password("password123")
     
@@ -35,18 +47,26 @@ def create_test_users():
         email="mohammed.ali@gmail.com",
         first_name="Mohammed",
         last_name="Ali",
-        phone_number="+96612345678"
+        phone_number="+96612345678",
+        loyalty_miles=5000,
+        loyalty_points=150,
+        loyalty_tier="BLUE",
+        membership_number="GF004567"
     )
     user4.set_password("password123")
     
     user5 = UserModel(
-        username="fatima_hassan", 
-        email="fatima.hassan@gmail.com",
-        first_name="Fatima",
-        last_name="Hassan",
-        phone_number="+97412345678"
+        username="aliaburashid", 
+        email="burashidalia@gmail.com",
+        first_name="Alia",
+        last_name="Burashid",
+        phone_number="+97333740073",
+        loyalty_miles=27852,
+        loyalty_points=700,
+        loyalty_tier="BLUE",
+        membership_number="GF82413429"
     )
-    user5.set_password("password123")
+    user5.set_password("alia123")
 
     return [user1, user2, user3, user4, user5]
 

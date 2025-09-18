@@ -1,8 +1,8 @@
 # =============================================================================
 # FLIGHT MODEL - Stores individual flight information
+# =============================================================================
 # This model stores details about each specific flight (route, time, pricing, availability)
 # Each flight is linked to an aircraft and has separate pricing for economy/business classes
-# =============================================================================
 
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
 from .base import BaseModel
@@ -30,11 +30,11 @@ class FlightModel(BaseModel):
     
     # Pricing - different prices for different seat classes
     economy_price = Column(Float)   # Price for economy class seats
-    falcon_gold_price = Column(Float)  # Price for Falcon Gold class seats (usually 2.5x economy)
+    business_price = Column(Float)  # Price for business class seats (usually 2.5x economy)
     
     # Seat availability - how many seats are still available
     available_economy_seats = Column(Integer)   # Available economy seats
-    available_falcon_gold_seats = Column(Integer)  # Available Falcon Gold seats
+    available_business_seats = Column(Integer)  # Available business seats
     
     # Flight status - current state of the flight
     status = Column(String, default="scheduled")  # Options: scheduled, delayed, cancelled, completed
@@ -43,4 +43,4 @@ class FlightModel(BaseModel):
     aircraft = relationship('AircraftModel')
 
     # Relationship to bookings (a flight can have many bookings)
-    bookings = relationship('BookingModel', back_populates='flight')
+    bookings = relationship('BookingModel', back_populates='flight', lazy='dynamic')

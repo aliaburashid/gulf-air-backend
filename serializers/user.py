@@ -24,9 +24,11 @@ class UserResponseSchema(BaseModel):
     class Config:
         orm_mode = True
 
-# New schema for user login (captures username and password during login)
+# New schema for user login (supports email, username, or Falcon Flyer number)
 class UserLogin(BaseModel):
-    username: str  # Username provided by the user during login
+    email: Optional[str] = None  # Email for email login
+    falcon_flyer_number: Optional[str] = None  # Falcon Flyer number for loyalty login
+    username: Optional[str] = None  # Username for traditional login
     password: str  # Plain text password provided by the user during login
 
 # New schema for the response (containing the JWT token and a success message)

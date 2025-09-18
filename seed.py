@@ -1,9 +1,6 @@
 # seed.py
 
 from sqlalchemy.orm import sessionmaker, Session
-from data.gulf_air_flights import flights_list
-from data.booking_data import bookings_list
-from data.user_data import user_list
 from config.environment import db_URI
 from sqlalchemy import create_engine
 from models.base import Base # import base model
@@ -29,6 +26,7 @@ try:
 
     # Add users first (they are referenced by bookings)
     print("Adding users...")
+    from data.user_data import user_list
     db.add_all(user_list)
     db.commit()
 
@@ -43,11 +41,13 @@ try:
 
     # Add flights
     print("Adding flights...")
+    from data.gulf_air_flights import flights_list
     db.add_all(flights_list)
     db.commit()
 
     # Add bookings (after users and flights are created)
     print("Adding bookings...")
+    from data.booking_data import bookings_list
     db.add_all(bookings_list)
     db.commit()
 

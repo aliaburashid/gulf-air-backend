@@ -1,8 +1,8 @@
 # =============================================================================
 # BOOKING MODEL - Stores passenger flight bookings
+# =============================================================================
 # This model links users to flights and stores all booking details
 # Includes passenger information, seat selection, and payment details
-# =============================================================================
 
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from .base import BaseModel
@@ -27,7 +27,7 @@ class BookingModel(BaseModel):
     passport_number = Column(String)    # Required for international flights
     
     # Seat information - where the passenger sits
-    seat_class = Column(String, default="economy")  # "economy" or "falcon_gold"
+    seat_class = Column(String, default="economy")  # "economy" or "business"
     seat_number = Column(String)  # Specific seat like "12A", "1B"
     
     # Booking status and payment

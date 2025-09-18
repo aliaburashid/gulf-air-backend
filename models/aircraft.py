@@ -1,8 +1,8 @@
 # =============================================================================
 # AIRCRAFT MODEL - Stores information about Gulf Air's fleet
+# =============================================================================
 # This model stores details about each type of aircraft in Gulf Air's fleet
 # It includes seat configurations, technical specifications, and performance data
-# =============================================================================
 
 from sqlalchemy import Column, Integer, String, Float
 from .base import BaseModel
@@ -21,7 +21,7 @@ class AircraftModel(BaseModel):
     # Seat configuration - how many seats in each class
     total_seats = Column(Integer)  # Total passenger capacity
     economy_seats = Column(Integer)  # Economy class seats
-    falcon_gold_seats = Column(Integer)  # Falcon Gold class seats (Gulf Air's premium class)
+    business_seats = Column(Integer)  # Business class seats
     first_seats = Column(Integer, default=0)  # First class seats (Gulf Air doesn't have first class)
     
     # Technical specifications
@@ -31,96 +31,35 @@ class AircraftModel(BaseModel):
     
     # =============================================================================
     # GULF AIR FLEET DATA - Real aircraft specifications
-    # This method returns the actual aircraft types and specifications used by Gulf Air
     # =============================================================================
+    # This method returns the actual aircraft types and specifications used by Gulf Air
+    # Data is based on their official website and industry information
     
-    # it doesn't need any class or instance data.
-    # It allows you to define utility functions inside a class without needing self
     @staticmethod
     def get_gulf_air_fleet():
-        """Returns Gulf Air's current fleet specifications based on their official fleet page"""
+        """Returns Gulf Air's simplified fleet specifications with only 2 aircraft types"""
         return [
             {
-                'aircraft_type': 'Boeing 787-9 Dreamliner',
+                'aircraft_type': 'Boeing 787 Dreamliner',
                 'manufacturer': 'Boeing',
-                'model': '787-9',
+                'model': '787',
                 'total_seats': 282,
-                'economy_seats': 256,
-                'falcon_gold_seats': 26,
+                'economy_seats': 252,
+                'business_seats': 30,
                 'first_seats': 0,
                 'range_km': 15750,
                 'cruise_speed_kmh': 913,
                 'fuel_capacity_liters': 126000
             },
             {
-                'aircraft_type': 'Airbus A321neo',
+                'aircraft_type': 'Airbus A320',
                 'manufacturer': 'Airbus',
-                'model': 'A321neo',
-                'total_seats': 166,
-                'economy_seats': 150,
-                'falcon_gold_seats': 16,
+                'model': 'A320',
+                'total_seats': 144,
+                'economy_seats': 132,
+                'business_seats': 12,
                 'first_seats': 0,
                 'range_km': 6500,
-                'cruise_speed_kmh': 840,
-                'fuel_capacity_liters': 23800
-            },
-            {
-                'aircraft_type': 'Airbus A321neo (HD)',
-                'manufacturer': 'Airbus',
-                'model': 'A321neo HD',
-                'total_seats': 192,
-                'economy_seats': 180,
-                'falcon_gold_seats': 12,
-                'first_seats': 0,
-                'range_km': 6500,
-                'cruise_speed_kmh': 840,
-                'fuel_capacity_liters': 23800
-            },
-            {
-                'aircraft_type': 'Airbus A320neo',
-                'manufacturer': 'Airbus',
-                'model': 'A320neo',
-                'total_seats': 136,
-                'economy_seats': 120,
-                'falcon_gold_seats': 16,
-                'first_seats': 0,
-                'range_km': 6500,
-                'cruise_speed_kmh': 840,
-                'fuel_capacity_liters': 23800
-            },
-            {
-                'aircraft_type': 'Airbus A320neo (HD)',
-                'manufacturer': 'Airbus',
-                'model': 'A320neo HD',
-                'total_seats': 150,
-                'economy_seats': 138,
-                'falcon_gold_seats': 12,
-                'first_seats': 0,
-                'range_km': 6500,
-                'cruise_speed_kmh': 840,
-                'fuel_capacity_liters': 23800
-            },
-            {
-                'aircraft_type': 'Airbus A321ER',
-                'manufacturer': 'Airbus',
-                'model': 'A321ER',
-                'total_seats': 169,
-                'economy_seats': 161,
-                'falcon_gold_seats': 8,
-                'first_seats': 0,
-                'range_km': 7400,
-                'cruise_speed_kmh': 840,
-                'fuel_capacity_liters': 23800
-            },
-            {
-                'aircraft_type': 'Airbus A320-200',
-                'manufacturer': 'Airbus',
-                'model': 'A320-200',
-                'total_seats': 136,
-                'economy_seats': 120,
-                'falcon_gold_seats': 16,
-                'first_seats': 0,
-                'range_km': 6100,
                 'cruise_speed_kmh': 840,
                 'fuel_capacity_liters': 23800
             }
