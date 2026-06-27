@@ -515,4 +515,3 @@ def check_in_booking(booking_id: int, db: Session = Depends(get_db), current_use
         }
     
     return response_data
-

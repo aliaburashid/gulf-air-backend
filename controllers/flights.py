@@ -16,7 +16,19 @@ def get_flights(db: Session=Depends(get_db)):
     flights = db.query(FlightModel).all()
     return flights
 
-
+# =============================================================================
+# GET BOOKED SEATS - Returns all taken seats for a specific flight
+# =============================================================================
+@router.get("/flights/{flight_id}/booked-seats")
+def get_booked_seats(flight_id: int, db: Session = Depends(get_db)):
+    """Get all booked seat numbers for a flight so the seat map can show availability"""
+    from models.booking import BookingModel
+    booked = db.query(BookingModel.seat_number).filter(
+        BookingModel.flight_id == flight_id,
+        BookingModel.booking_status == "confirmed"
+    ).all()
+    return {"booked_seats": [seat[0] for seat in booked if seat[0]]}
+    
 # ------------------------
 # Get on flight by ID
 # ------------------------
@@ -113,3 +125,4 @@ def get_flight_status(flight_number: str, db: Session = Depends(get_db)):
         "departure_time": flight.departure_time,
         "arrival_time": flight.arrival_time
     }
+
