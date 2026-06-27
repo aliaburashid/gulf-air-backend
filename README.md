@@ -1,173 +1,193 @@
-# Gulf Air Backend API
+# ✈️ Gulf Air App — Backend (FastAPI)
 
-A FastAPI-based backend for Gulf Air flight booking system, built following the same structure as the Python FastAPI tea app.
+The engine powering the Gulf Air mobile app. Built with FastAPI + SQLAlchemy + SQLite, this backend handles authentication, flight data, bookings, seat management, and the Falconflyer loyalty programme.
 
-## Project Structure
+---
+
+## 🧰 Tech Stack
+
+- **FastAPI** — modern Python web framework
+- **SQLAlchemy** — ORM for database models
+- **SQLite** — lightweight local database
+- **Pydantic** — data validation
+- **JWT** — authentication via PyJWT + Passlib
+- **Uvicorn** — ASGI server
+
+---
+
+## 🗺️ Project Structure
 
 ```
 gulf-air-backend/
 ├── config/
-│   └── environment.py          # Database URI and secret key configuration
+│   └── environment.py          # db_URI and secret key (not tracked in git)
 ├── controllers/
-│   ├── users.py               # User authentication and management endpoints
-│   ├── flights.py             # Flight management endpoints
-│   └── bookings.py            # Booking management endpoints
+│   ├── users.py                # Auth + loyalty endpoints
+│   ├── flights.py              # Flight endpoints + booked seats
+│   └── bookings.py             # Booking endpoints
 ├── data/
-│   ├── user_data.py           # Sample user data for seeding
-│   ├── flight_data.py         # Sample flight data for seeding
-│   └── booking_data.py        # Sample booking data for seeding
+│   ├── user_data.py
+│   ├── gulf_air_flights.py
+│   ├── gulf_air_fleet_info.py
+│   └── booking_data.py
 ├── dependencies/
-│   └── get_current_user.py    # JWT authentication dependency
+│   └── get_current_user.py
 ├── models/
-│   ├── base.py                # Base model with common fields
-│   ├── user.py                # User model with authentication
-│   ├── flight.py              # Flight model
-│   └── booking.py             # Booking model
+│   ├── base.py
+│   ├── user.py
+│   ├── flight.py
+│   ├── booking.py
+│   └── aircraft.py
 ├── serializers/
-│   ├── user.py                # User request/response schemas
-│   ├── flight.py              # Flight request/response schemas
-│   └── booking.py             # Booking request/response schemas
-├── database.py                # SQLAlchemy database configuration
-├── main.py                    # FastAPI application entry point
-├── seed.py                    # Database seeding script
-├── Pipfile                    # Python dependencies
-└── README.md                  # This file
+│   ├── user.py
+│   ├── flight.py
+│   └── booking.py
+├── database.py
+├── main.py
+├── seed.py
+├── Pipfile
+└── Pipfile.lock
 ```
 
-## Features
+---
 
-- **User Management**: Registration, login, and JWT authentication
-- **Flight Management**: CRUD operations for flights with search functionality
-- **Booking Management**: Create, view, update, and cancel bookings
-- **Authentication**: JWT-based authentication with password hashing
-- **Database**: PostgreSQL with SQLAlchemy ORM
-- **CORS**: Configured for frontend integration
+## 🚀 Getting Started
 
-## Setup Instructions
-
-### 1. Install Dependencies
+### 1. Clone the repo
 
 ```bash
-# Install pipenv if you haven't already
+git clone https://github.com/aliaburashid/gulf-air-backend.git
+cd gulf-air-backend
+```
+
+### 2. Create the config file
+
+This file is not tracked in git — you must create it manually:
+
+```bash
+cat > config/environment.py << 'EOF'
+db_URI = "sqlite:///./gulf_air.db"
+SECRET_KEY = "supersecretkey123"
+secret = "supersecretkey123"
+EOF
+```
+
+### 3. Install dependencies
+
+```bash
 pip install pipenv
-
-# Install project dependencies
-pipenv install
+python3 -m pipenv --python /opt/homebrew/bin/python3.11
+python3 -m pipenv install --dev
+python3 -m pipenv run pip install PyJWT "bcrypt==4.0.1"
 ```
 
-### 2. Database Setup
-
-Update the database URI in `config/environment.py`:
-
-```python
-db_URI="postgresql://username:password@localhost:5432/gulf_air_db"
-```
-
-Or use SQLite for development:
-
-```python
-db_URI="sqlite:///./gulf_air_db.db"
-```
-
-### 3. Seed the Database
+### 4. Seed the database
 
 ```bash
-# Activate the virtual environment
-pipenv shell
-
-# Run the seed script to create tables and add sample data
-python seed.py
+python3 -m pipenv run python seed.py
 ```
 
-### 4. Run the Server
+### 5. Start the server
 
 ```bash
-# Start the FastAPI server
-uvicorn main:app --reload
+python3 -m pipenv run uvicorn main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`
+Interactive docs at `http://localhost:8000/docs`
 
-## API Endpoints
+---
 
-### Authentication (`/auth`)
+## 📡 API Endpoints
 
-- `POST /auth/register` - Register a new user
-- `POST /auth/login` - Login and get JWT token
-- `GET /auth/users` - Get all users (admin only)
-- `GET /auth/users/{user_id}` - Get user by ID
+### Auth (`/auth`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | Register a new user |
+| POST | `/auth/login` | Login and get JWT token |
+| GET | `/auth/users` | Get all users |
+| GET | `/auth/users/{id}` | Get user by ID |
+| GET | `/auth/loyalty` | Get loyalty data (auth required) |
 
 ### Flights (`/api`)
 
-- `GET /api/flights` - Get all flights
-- `GET /api/flights/{flight_id}` - Get flight by ID
-- `POST /api/flights` - Create new flight
-- `PUT /api/flights/{flight_id}` - Update flight
-- `DELETE /api/flights/{flight_id}` - Delete flight
-- `GET /api/flights/search/{departure_airport}/{arrival_airport}` - Search flights
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/flights` | Get all flights |
+| GET | `/api/flights/{id}` | Get flight by ID |
+| GET | `/api/flights/{id}/booked-seats` | Get booked seats for a flight |
+| GET | `/api/flights/search/{dep}/{arr}` | Search flights by route |
+| GET | `/api/flights/status/{flight_number}` | Get flight status |
+| POST | `/api/flights` | Create flight |
+| PUT | `/api/flights/{id}` | Update flight |
+| DELETE | `/api/flights/{id}` | Delete flight |
 
 ### Bookings (`/api`)
 
-- `GET /api/bookings` - Get user's bookings (requires authentication)
-- `GET /api/bookings/{booking_id}` - Get booking by ID
-- `POST /api/bookings` - Create new booking (requires authentication)
-- `PUT /api/bookings/{booking_id}` - Update booking
-- `DELETE /api/bookings/{booking_id}` - Cancel booking
-- `GET /api/bookings/reference/{booking_reference}` - Get booking by reference
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/bookings` | Get user's bookings (auth required) |
+| POST | `/api/bookings` | Create booking (auth required) |
+| GET | `/api/bookings/{id}` | Get booking by ID |
+| PUT | `/api/bookings/{id}` | Update booking |
+| DELETE | `/api/bookings/{id}` | Cancel booking |
+| GET | `/api/bookings/reference/{ref}` | Get booking by reference |
+| POST | `/api/bookings/{id}/reschedule` | Reschedule booking |
+| POST | `/api/bookings/{id}/checkin` | Check in and earn miles |
 
-## Sample Data
+---
 
-The seed script creates:
+## 🔐 Test Users
 
-- **5 test users** with different roles and locations
-- **8 sample flights** between major Gulf cities
-- **3 sample bookings** for testing
+| Username | Password | Email |
+|----------|----------|-------|
+| aliaburashid | alia123 | burashidalia@gmail.com |
+| admin_user | admin123 | admin@gulfair.com |
+| john_doe | password123 | john@example.com |
+| sarah_ahmed | password123 | sarah@example.com |
 
-### Test User Credentials
+---
 
-- Username: `admin_user`, Password: `admin123`
-- Username: `john_doe`, Password: `password123`
-- Username: `sarah_ahmed`, Password: `password123`
+## 🏅 Falconflyer Loyalty Programme
 
-## Authentication
+Check-in calculates miles and points based on flight distance, seat class, and loyalty tier.
 
-The API uses JWT tokens for authentication. Include the token in the Authorization header:
+| Tier | Points Required |
+|------|----------------|
+| BLUE | 0 |
+| SILVER | 500 |
+| GOLD | 1,000 |
+| PLATINUM | 2,000 |
 
-```
-Authorization: Bearer <your_jwt_token>
-```
+Seat class multipliers: Economy 1.0x · Falcon Gold 1.5x
 
-## Database Models
+Tier multipliers: BLUE 1.0x · SILVER 1.25x · GOLD 1.5x · PLATINUM 2.0x
 
-### User Model
-- id, username, email, password_hash
-- first_name, last_name, phone_number
-- created_at, updated_at
+---
 
-### Flight Model
-- id, flight_number, departure_airport, arrival_airport
-- departure_time, arrival_time, aircraft_type
-- price, available_seats, total_seats, status
-- created_at, updated_at
+## ✈️ Gulf Air Fleet
 
-### Booking Model
-- id, booking_reference, user_id, flight_id
-- passenger_name, passenger_email, seat_number
-- booking_status, total_price, booking_date
-- created_at, updated_at
+| Aircraft | Business | Economy | Business Config | Economy Config |
+|----------|----------|---------|----------------|----------------|
+| Airbus A320 | 16 seats | 120 seats | 2+2 (A C / D F) | 3+3 (A B C / D E F) |
+| Boeing 787 Dreamliner | 30 seats | 252 seats | 2+2+2 (A C / D G / H K) | 3+3+3 (A B C / D E F / G H K) |
 
-## Development
+---
 
-To add new features:
+## 🛟 Troubleshooting
 
-1. Create/update models in `models/`
-2. Create/update serializers in `serializers/`
-3. Create/update controllers in `controllers/`
-4. Add routes to `main.py`
-5. Update seed data if needed
+- **`command not found: pipenv`** — use `python3 -m pipenv` instead
+- **Port 8000 in use** — run `kill -9 $(lsof -t -i:8000)` then restart
+- **`No module named config.environment`** — create the file manually (see step 2)
+- **bcrypt errors** — install `bcrypt==4.0.1` specifically
+- **Python version errors** — project requires Python 3.10+ for `str | None` syntax
 
-## API Documentation
+---
 
-Once the server is running, visit:
+## 📖 API Documentation
+
+Once the server is running:
+
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
